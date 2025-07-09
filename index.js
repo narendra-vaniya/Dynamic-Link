@@ -372,7 +372,9 @@ app.get('/health', (req, res) => {
         linksCount: linksStore.size
     });
 });
-
+app.get("/",(req,res)=>{
+    res.send("Dynamic Links Server is up and running!");
+})
 // Error handling
 app.use((err, req, res, next) => {
     console.error('Error:', err);

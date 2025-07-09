@@ -12,12 +12,12 @@ const deferredStore = new Map();
 
 // Configuration
 const CONFIG = {
-    domain: 'yourdomain.com',
-    appName: 'YourApp',
-    iosAppId: '123456789',
-    androidPackage: 'com.yourcompany.yourapp',
-    iosScheme: 'yourapp',
-    androidScheme: 'yourapp'
+    domain: 'dynamic-link-aiux.onrender.com',
+    appName: 'ZuAI',
+    iosAppId: 'id1609941536',
+    androidPackage: 'in.zupay.app',
+    iosScheme: 'zuaiapp',
+    androidScheme: 'zuaiapp'
 };
 
 // Utility Functions
@@ -189,9 +189,10 @@ app.get('/:shortCode', (req, res) => {
                             // Try to open app immediately
                             window.location.href = '${linkData.iosUrl}';
                             
-                            // If app doesn't open in 2 seconds, show content
+                            // If app doesn't open in 2 seconds, redirect to fallback
                             setTimeout(() => {
-                                console.log('App not installed, showing web content');
+                                console.log('App not installed, redirecting to fallback');
+                                window.location.href = '${linkData.iosFallback}';
                             }, 2000);
                             
                             // Store for deferred deep linking
@@ -238,9 +239,10 @@ app.get('/:shortCode', (req, res) => {
                             // Try to open app immediately
                             window.location.href = '${linkData.androidUrl}';
                             
-                            // If app doesn't open in 2 seconds, show content
+                            // If app doesn't open in 2 seconds, redirect to fallback
                             setTimeout(() => {
-                                console.log('App not installed, showing web content');
+                                console.log('App not installed, redirecting to fallback');
+                                window.location.href = '${linkData.androidFallback}';
                             }, 2000);
                             
                             // Store for deferred deep linking
@@ -372,9 +374,11 @@ app.get('/health', (req, res) => {
         linksCount: linksStore.size
     });
 });
+
 app.get("/",(req,res)=>{
     res.send("Dynamic Links Server is up and running!");
 })
+
 // Error handling
 app.use((err, req, res, next) => {
     console.error('Error:', err);

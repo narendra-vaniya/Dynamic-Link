@@ -179,19 +179,16 @@ app.get("/:shortCode", (req, res) => {
                                 }
                             }, 2000);
                         }
-                        
-                        // Auto redirect after 2 seconds
-                        setTimeout(function() {
-                            const fallbackUrl = '${
-                              platform === "ios"
-                                ? linkData.iosFallback
-                                : linkData.androidFallback
-                            }';
-                            if ('${platform}' === 'android') {
+                         const originalUrl = '${
+                                  platform === "ios"
+                                    ? linkData.iosUrl
+                                    : linkData.androidUrl
+                                }';
+                         if ('${platform}' === 'android') {
                                 const params = new URLSearchParams(${JSON.stringify(
                                   linkData.customParams
                                 )});
-                                window.location.href = fallbackUrl + (fallbackUrl.includes('?') ? '&' : '?') + params.toString();
+                                window.location.href = originalUrl + (originalUrl.includes('?') ? '&' : '?') + params.toString();
                             } else {
                                 // For iOS, include all linkData as query parameters
                                 const iosParams = new URLSearchParams({
@@ -201,11 +198,11 @@ app.get("/:shortCode", (req, res) => {
                                     description: '${linkData.description}',
                                     originalUrl: '${linkData.originalUrl}'
                                 });
-                                const iosFallbackWithParams = fallbackUrl + (fallbackUrl.includes('?') ? '&' : '?') + iosParams.toString();
+                                const iosFallbackWithParams = originalUrl + (originalUrl.includes('?') ? '&' : '?') + iosParams.toString();
                                 copyToClipboard(iosFallbackWithParams);
                                 window.location.href = iosFallbackWithParams;
                             }
-                        }, 2000);
+
                     </script>
                 </head>
                 <body style="margin: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-family: Arial, sans-serif; padding: 20px;">

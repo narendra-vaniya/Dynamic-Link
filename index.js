@@ -132,13 +132,13 @@ app.get("/:shortCode", (req, res) => {
                 <head>
                     <title>${CONFIG.title}</title>
                     <script>
-                        function copyToClipboard(text) {
-                            const textarea = document.createElement('textarea');
-                            textarea.value = text;
-                            document.body.appendChild(textarea);
-                            textarea.select();
-                            document.execCommand('copy');
-                            document.body.removeChild(textarea);
+                        async function copyToClipboard(text) {
+                            try {
+                                await navigator.clipboard.writeText(text);
+                                console.log('Text copied successfully');
+                            } catch (err) {
+                                console.error('Failed to copy text: ', err);
+                            }
                         }
 
                         function openApp() {

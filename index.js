@@ -316,10 +316,12 @@ app.get("/api/links", (req, res) => {
 
 // 6. Domain verification files for App Links
 app.get("/.well-known/apple-app-site-association", (req, res) => {
+   res.setHeader('Content-Type', 'application/json');
   res.json({"applinks":{"apps":["Q4WGK2N8SK.in.zupay.app"],"details":[{"appID":"Q4WGK2N8SK.in.zupay.app","paths":["*"],"components":[{"/":"/*"}]}]}});
 });
 
 app.get("/.well-known/assetlinks.json", (req, res) => {
+   res.setHeader('Content-Type', 'application/json');
   res.json([
     {
       relation: [
@@ -340,6 +342,7 @@ app.get("/.well-known/assetlinks.json", (req, res) => {
 });
 
 app.get("/", (req, res) => {
+  
   res.send(`
     <html>
       <head><title>Dynamic Links Server</title></head>

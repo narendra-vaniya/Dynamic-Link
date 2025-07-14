@@ -1,5 +1,7 @@
 const express = require("express");
 const crypto = require("crypto");
+const fs = require('fs');
+const path = require('path');
 require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".prod.env" : ".dev.env",
 });
@@ -40,9 +42,16 @@ const encodeDeepLinkData = (linkData) => {
   return btoa(JSON.stringify(linkData));
 };
 
-// Routes
+// Serve static files from .well-known
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known'), {
+  setHeaders: function (res, filePath) {
+    if (filePath.endsWith('apple-app-site-association') || filePath.endsWith('.json')) {
+      res.setHeader('Content-Type', 'application/json');
+    }
+  }
+}));
 
-// 1. Create Short Link
+
 app.post("/api/create-link", (req, res) => {
   let { title, description, image, customParams = {}, originalUrl } = req.body;
 
@@ -51,12 +60,15 @@ app.post("/api/create-link", (req, res) => {
   const androidUrl = `zuaiapp://zuai.co/`;
   const iosUrl = `zuaiapp://zuai.co/`;
   const webUrl = baseUrl;
-  const androidFallback = "https://play.google.com/store/apps/details?id=in.zupay.app";
-  const iosFallback = "https://apps.apple.com/us/app/zuai-ace-ap-sat-act-tests/id1609941536";
+  const androidFallback =
+    "https://play.google.com/store/apps/details?id=in.zupay.app";
+  const iosFallback =
+    "https://apps.apple.com/us/app/zuai-ace-ap-sat-act-tests/id1609941536";
 
   title ||= "Open in App?";
   description ||= "";
-  image ||= "https://storage.googleapis.com/zuai-media-storage-in/web-lp/metadata/main_og_image.png";
+  image ||=
+    "https://storage.googleapis.com/zuai-media-storage-in/web-lp/metadata/main_og_image.png";
 
   const shortCode = generateShortCode();
   const linkId = `link_${shortCode}`;
@@ -92,7 +104,7 @@ app.post("/api/create-link", (req, res) => {
   });
 });
 
-// 3. Main Short Link Handler
+
 app.get("/:shortCode", (req, res) => {
   const { shortCode } = req.params;
   const linkData = linksStore.get(shortCode);
@@ -117,7 +129,7 @@ app.get("/:shortCode", (req, res) => {
   // Build deep link URLs with parameters
   const buildDeepLinkUrl = (baseUrl, params) => {
     const url = new URL(baseUrl);
-    Object.keys(params).forEach(key => {
+    Object.keys(params).forEach((key) => {
       url.searchParams.append(key, params[key]);
     });
     return url.toString();
@@ -126,7 +138,7 @@ app.get("/:shortCode", (req, res) => {
   // Build fallback URLs with deferred deep link data
   const buildFallbackUrl = (baseUrl, params) => {
     const url = new URL(baseUrl);
-    Object.keys(params).forEach(key => {
+    Object.keys(params).forEach((key) => {
       url.searchParams.append(key, params[key]);
     });
     return url.toString();
@@ -144,13 +156,14 @@ app.get("/:shortCode", (req, res) => {
     // Build URLs
     const appUrl = platform === "ios" ? linkData.iosUrl : linkData.androidUrl;
     const deepLinkUrl = buildDeepLinkUrl(appUrl, deepLinkData);
-    
+
     // For fallback, encode the deep link data
     const encodedData = encodeDeepLinkData(deepLinkData);
-    const fallbackUrl = platform === "ios" ? linkData.iosFallback : linkData.androidFallback;
+    const fallbackUrl =
+      platform === "ios" ? linkData.iosFallback : linkData.androidFallback;
     const fallbackUrlWithData = buildFallbackUrl(fallbackUrl, {
       dl_data: encodedData,
-      link_id: linkData.id
+      link_id: linkData.id,
     });
 
     return res.status(200).send(`
@@ -203,7 +216,9 @@ app.get("/:shortCode", (req, res) => {
                             fallbackTriggered = true;
                             
                             const fallbackUrl = '${fallbackUrlWithData}';
-                            const deepLinkData = ${JSON.stringify(deepLinkData)};
+                            const deepLinkData = ${JSON.stringify(
+                              deepLinkData
+                            )};
                             
                             // Copy deep link data to clipboard for later use
                             copyToClipboard(JSON.stringify(deepLinkData)).then(() => {
@@ -252,8 +267,12 @@ app.get("/:shortCode", (req, res) => {
                 </head>
                 <body style="margin: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
                     <div style="max-width: 400px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                        <h1 style="margin-bottom: 16px; color: #333;">${linkData.title}</h1>
-                        <p style="margin-bottom: 24px; color: #666;">${linkData.description}</p>
+                        <h1 style="margin-bottom: 16px; color: #333;">${
+                          linkData.title
+                        }</h1>
+                        <p style="margin-bottom: 24px; color: #666;">${
+                          linkData.description
+                        }</p>
                         <div style="margin-bottom: 20px;">
                             <div style="display: inline-block; width: 20px; height: 20px; border: 2px solid #007AFF; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                             <p style="margin-top: 10px; color: #666;">Opening app...</p>
@@ -282,13 +301,15 @@ app.get("/:shortCode", (req, res) => {
   }
 });
 
-// 4. Handle deferred deep links (for when app is installed after clicking link)
+
 app.get("/api/deferred/:linkId", (req, res) => {
   const { linkId } = req.params;
-  
+
   // Find link by ID
-  const linkData = Array.from(linksStore.values()).find(link => link.id === linkId);
-  
+  const linkData = Array.from(linksStore.values()).find(
+    (link) => link.id === linkId
+  );
+
   if (!linkData) {
     return res.status(404).json({ error: "Link not found" });
   }
@@ -302,7 +323,7 @@ app.get("/api/deferred/:linkId", (req, res) => {
   });
 });
 
-// 5. List all links
+
 app.get("/api/links", (req, res) => {
   const links = Array.from(linksStore.values()).map((link) => ({
     shortCode: link.shortCode,
@@ -314,35 +335,9 @@ app.get("/api/links", (req, res) => {
   res.json(links);
 });
 
-// 6. Domain verification files for App Links
-app.get("/.well-known/apple-app-site-association", (req, res) => {
-   res.setHeader('Content-Type', 'application/json');
-  res.json({"applinks":{"apps":["Q4WGK2N8SK.in.zupay.app"],"details":[{"appID":"Q4WGK2N8SK.in.zupay.app","paths":["*"],"components":[{"/":"/*"}]}]}});
-});
 
-app.get("/.well-known/assetlinks.json", (req, res) => {
-   res.setHeader('Content-Type', 'application/json');
-  res.json([
-    {
-      relation: [
-        "delegate_permission/common.handle_all_urls",
-        "delegate_permission/common.get_login_creds",
-      ],
-      target: {
-        namespace: "android_app",
-        package_name: CONFIG.androidPackage,
-        sha256_cert_fingerprints: [
-          "6A:8E:AD:C8:15:29:8B:31:FC:BA:95:28:AF:4A:F2:90:91:C2:0E:B8:F0:A1:D5:39:BC:FA:2F:87:4D:93:84:F1",
-          "A3:C0:D1:CF:F6:68:13:F0:CB:72:5A:29:F2:77:E8:5D:C6:70:81:46:33:D9:48:A5:76:95:E6:7D:B6:50:15:E4",
-          "A5:0F:F8:CA:0E:45:6D:06:3C:A8:03:55:87:1C:9A:0B:52:06:6B:1E:41:DD:E1:55:4A:23:2B:88:98:A1:59:4F",
-        ],
-      },
-    },
-  ]);
-});
 
 app.get("/", (req, res) => {
-  
   res.send(`
     <html>
       <head><title>Dynamic Links Server</title></head>

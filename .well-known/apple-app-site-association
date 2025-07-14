@@ -1,1 +1,13 @@
-{"applinks":{"apps":["Q4WGK2N8SK.in.zupay.app"],"details":[{"appID":"Q4WGK2N8SK.in.zupay.app","paths":["*"],"components":[{"/":"/*"}]}]}}
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "Q4WGK2N8SK.in.zupay.app",
+                "paths": [
+                    "*"
+                ]
+            }
+        ]
+    }
+}

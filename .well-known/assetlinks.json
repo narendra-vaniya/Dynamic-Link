@@ -1,1 +1,17 @@
-[{"relation":["delegate_permission/common.handle_all_urls","delegate_permission/common.get_login_creds"],"target":{"namespace":"android_app","package_name":"in.zupay.app","sha256_cert_fingerprints":["6A:8E:AD:C8:15:29:8B:31:FC:BA:95:28:AF:4A:F2:90:91:C2:0E:B8:F0:A1:D5:39:BC:FA:2F:87:4D:93:84:F1","A3:C0:D1:CF:F6:68:13:F0:CB:72:5A:29:F2:77:E8:5D:C6:70:81:46:33:D9:48:A5:76:95:E6:7D:B6:50:15:E4","A5:0F:F8:CA:0E:45:6D:06:3C:A8:03:55:87:1C:9A:0B:52:06:6B:1E:41:DD:E1:55:4A:23:2B:88:98:A1:59:4F"]}}]
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls",
+            "delegate_permission/common.get_login_creds"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "in.zupay.app",
+            "sha256_cert_fingerprints": [
+                "6A:8E:AD:C8:15:29:8B:31:FC:BA:95:28:AF:4A:F2:90:91:C2:0E:B8:F0:A1:D5:39:BC:FA:2F:87:4D:93:84:F1",
+                "A3:C0:D1:CF:F6:68:13:F0:CB:72:5A:29:F2:77:E8:5D:C6:70:81:46:33:D9:48:A5:76:95:E6:7D:B6:50:15:E4",
+                "A5:0F:F8:CA:0E:45:6D:06:3C:A8:03:55:87:1C:9A:0B:52:06:6B:1E:41:DD:E1:55:4A:23:2B:88:98:A1:59:4F"
+            ]
+        }
+    }
+]
